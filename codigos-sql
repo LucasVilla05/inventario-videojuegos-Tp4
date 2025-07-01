@@ -1,0 +1,54 @@
+-- Crear la base de datos
+CREATE DATABASE IF NOT EXISTS inventario_juegos;
+USE inventario_juegos;
+
+-- Tabla de usuarios
+CREATE TABLE IF NOT EXISTS usuarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    contraseña VARCHAR(100) NOT NULL,
+    preferencias TEXT
+);
+
+-- Tabla de videojuegos
+CREATE TABLE IF NOT EXISTS videojuegos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    titulo VARCHAR(100) NOT NULL,
+    genero VARCHAR(50),
+    plataforma VARCHAR(50),
+    fecha_adquisicion DATE,
+    estado VARCHAR(50)
+);
+
+-- Tabla de inventario (relación usuarios - videojuegos)
+CREATE TABLE IF NOT EXISTS inventario (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id INT,
+    videojuego_id INT,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+    FOREIGN KEY (videojuego_id) REFERENCES videojuegos(id) ON DELETE CASCADE
+);
+
+-- Tabla de recomendaciones
+CREATE TABLE IF NOT EXISTS recomendaciones (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id INT,
+    videojuego_sugerido VARCHAR(100),
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+);
+
+-- Inserción de prueba
+INSERT INTO usuarios (nombre, email, contraseña, preferencias)
+VALUES ('Lucas', 'lucas@mail.com', '1234', 'Acción, Aventura');
+
+INSERT INTO videojuegos (titulo, genero, plataforma, fecha_adquisicion, estado)
+VALUES ('The Witcher 3', 'RPG', 'PC', '2023-05-10', 'Completado');
+
+-- Relación inventario
+INSERT INTO inventario (usuario_id, videojuego_id)
+VALUES (1, 1);
+
+-- Recomendación de ejemplo
+INSERT INTO recomendaciones (usuario_id, videojuego_sugerido)
+VALUES (1, 'Cyberpunk 2077');
