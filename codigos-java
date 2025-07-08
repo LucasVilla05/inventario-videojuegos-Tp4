@@ -1,3 +1,100 @@
+package inventario;
+
+import inventario.modelo.*;
+import java.util.*;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        Inventario inventario = new Inventario();
+
+        int opcion;
+        do {
+            System.out.println("\n===== MENÚ PRINCIPAL =====");
+            System.out.println("1. Agregar videojuego");
+            System.out.println("2. Mostrar inventario");
+            System.out.println("3. Buscar videojuego por título");
+            System.out.println("4. Eliminar videojuego");
+            System.out.println("5. Ordenar alfabéticamente");
+            System.out.println("6. Detectar duplicados");
+            System.out.println("0. Salir");
+            System.out.print("Seleccione una opción: ");
+            opcion = scanner.nextInt();
+            scanner.nextLine(); // limpiar buffer
+
+            switch (opcion) {
+                case 1:
+                    System.out.print("Título: ");
+                    String titulo = scanner.nextLine();
+                    if (inventario.contiene(titulo)) {
+                        System.out.println("¡Este juego ya está en el inventario!");
+                        break;
+                    }
+                    System.out.print("Género: ");
+                    String genero = scanner.nextLine();
+                    System.out.print("Plataforma: ");
+                    String plataforma = scanner.nextLine();
+                    System.out.print("Fecha de adquisición (YYYY-MM-DD): ");
+                    String fecha = scanner.nextLine();
+                    System.out.print("Estado: ");
+                    String estado = scanner.nextLine();
+                    Videojuego nuevo = new Videojuego(titulo, genero, plataforma, fecha, estado);
+                    inventario.agregar(nuevo);
+                    System.out.println("✔ Videojuego agregado.");
+                    break;
+
+                case 2:
+                    System.out.println("📋 Inventario actual:");
+                    inventario.mostrar();
+                    break;
+
+                case 3:
+                    System.out.print("Ingrese título a buscar: ");
+                    String buscar = scanner.nextLine();
+                    boolean encontrado = false;
+                    for (Videojuego vj : inventario.getLista()) {
+                        if (vj.getTitulo().equalsIgnoreCase(buscar)) {
+                            System.out.println("🔍 Encontrado:");
+                            vj.mostrar();
+                            encontrado = true;
+                        }
+                    }
+                    if (!encontrado) System.out.println("❌ No se encontró el videojuego.");
+                    break;
+
+                case 4:
+                    System.out.print("Título del juego a eliminar: ");
+                    String eliminar = scanner.nextLine();
+                    boolean eliminado = inventario.eliminar(eliminar);
+                    if (eliminado) {
+                        System.out.println("🗑️ Juego eliminado.");
+                    } else {
+                        System.out.println("❌ Juego no encontrado.");
+                    }
+                    break;
+
+                case 5:
+                    inventario.ordenarAlfabeticamente();
+                    System.out.println("📚 Inventario ordenado alfabéticamente.");
+                    break;
+
+                case 6:
+                    inventario.detectarDuplicados();
+                    break;
+
+                case 0:
+                    System.out.println("👋 Gracias por usar el sistema.");
+                    break;
+
+                default:
+                    System.out.println("❗ Opción inválida.");
+            }
+
+        } while (opcion != 0);
+    }
+}
+
+
 package modelo;
 
 public class Usuario {
@@ -87,6 +184,37 @@ public class Inventario {
         for (Videojuego vj : lista) {
             vj.mostrar();
         }
+public boolean eliminar(String titulo) {
+    Iterator<Videojuego> iter = lista.iterator();
+    while (iter.hasNext()) {
+        if (iter.next().getTitulo().equalsIgnoreCase(titulo)) {
+            iter.remove();
+            return true;
+        }
+    }
+    return false;
+}
+
+public void ordenarAlfabeticamente() {
+    lista.sort(Comparator.comparing(Videojuego::getTitulo));
+}
+
+public void detectarDuplicados() {
+    Map<String, Integer> contador = new HashMap<>();
+    for (Videojuego vj : lista) {
+        contador.put(vj.getTitulo(), contador.getOrDefault(vj.getTitulo(), 0) + 1);
+    }
+    boolean duplicado = false;
+    for (Map.Entry<String, Integer> entry : contador.entrySet()) {
+        if (entry.getValue() > 1) {
+            System.out.println("⚠ Juego duplicado: " + entry.getKey() + " (x" + entry.getValue() + ")");
+            duplicado = true;
+        }
+    }
+    if (!duplicado) {
+        System.out.println("✅ No hay juegos duplicados.");
+    }
+}
     }
 }
 
